@@ -170,7 +170,7 @@ function HomePage() {
         <CodeMirror
           extensions={[langs.sql()]}
           theme={dracula}
-          height="200px"
+          height="500px"
           value={code}
           options={{
             mode: "sql",
