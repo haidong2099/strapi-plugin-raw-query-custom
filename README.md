@@ -16,12 +16,13 @@ Raw Query allows you to send raw query strings to the database within [Strapi CM
 
 ## ⏳ Installation
 
-	1.  Add an entry inside ```./package.json```
-	```json
+1.  Add an entry inside ```./package.json```
+```json	
 	"dependencies": {
-		"strapi-plugin-raw-query-custom": "https://github.com/haidong2099/strapi-plugin-raw-query-custom.git"
+	"strapi-plugin-raw-query-custom": "https://github.com/haidong2099/strapi-plugin-raw-query-custom.git"
 	}
-	```
+```
+
 2.  Install  depedencies ```yarn install```
 
 3.  Register plugin in ```./config/plugins.js```
