@@ -9,7 +9,18 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 import React, { memo, useEffect, useState } from "react";
 import { ContentLayout, HeaderLayout } from "@strapi/design-system/Layout";
 import { request, useNotification } from "@strapi/helper-plugin";
-import { Badge, Box, Button, Flex, Table, Tbody, Td, Th, Thead, Tr } from "@strapi/design-system";
+import {
+  Badge,
+  Box,
+  Button,
+  Flex,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from "@strapi/design-system";
 
 import CodeMirror from "@uiw/react-codemirror";
 import { langs } from "@uiw/codemirror-extensions-langs";
@@ -21,12 +32,10 @@ import * as pkg from "../../../../package.json";
 function HomePage() {
   const toggleNotification = useNotification();
 
-  const [ code, setCode ] = useState(
-    "SELECT * FROM admin_users LIMIT 1;",
-  );
+  const [code, setCode] = useState("SELECT * FROM admin_users LIMIT 1;");
 
-  const [ tableData, setTableData ] = useState(null);
-  const [ executing, setExecuting ] = useState(false);
+  const [tableData, setTableData] = useState(null);
+  const [executing, setExecuting] = useState(false);
 
   const editorDidMount = (editor, monaco) => {
     const code = window.localStorage.getItem(`${pluginId}_code`);
@@ -69,8 +78,12 @@ function HomePage() {
           id: `${getTrad("notification.info.execute.success")}`,
         },
       });
-      setTableData(response.response);
-      console.log("Execute respons: ",response.response);
+
+      console.log("Execute respons: ", response.response);
+
+      if (response.response.result.changes !== 1) {
+        setTableData(response.response);
+      }
     } catch (err) {
       console.error(err);
       toggleNotification({
@@ -85,7 +98,6 @@ function HomePage() {
   };
 
   const getTableHeaders = (data) => {
-    console.log(data);
     const headers = [];
     for (const dataKey in data) {
       headers.push(dataKey);
@@ -124,11 +136,11 @@ function HomePage() {
 
     // Generate CSV content
     const csvHeader = headersCsv.join(",");
-    const csvRows = rowsCsv.map(row => row.join(",")).join("\n");
+    const csvRows = rowsCsv.map((row) => row.join(",")).join("\n");
     const csvContent = `${csvHeader}\n${csvRows}`;
 
     // Create a Blob object to keep special characters
-    const blob = new Blob([ csvContent ], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 
     // Create a URL for the Blob
     const url = window.URL.createObjectURL(blob);
@@ -156,7 +168,7 @@ function HomePage() {
       />
       <ContentLayout>
         <CodeMirror
-          extensions={[ langs.sql() ]}
+          extensions={[langs.sql()]}
           theme={dracula}
           height="200px"
           value={code}
@@ -178,11 +190,19 @@ function HomePage() {
             Execute
           </Button>
         </div>
+
         <div style={{ overflow: "auto", margin: "24px 0px" }}>
-          {tableData
-            && <div className="raw-query_query">
-              <Flex justifyContent="space-between" alignItems="center" paddingBottom={4}>
-                <Badge>{tableData.result[0].length} Result{tableData.result[0].length > 1 ? "s" : ""}</Badge>
+          {tableData && (
+            <div className="raw-query_query">
+              <Flex
+                justifyContent="space-between"
+                alignItems="center"
+                paddingBottom={4}
+              >
+                <Badge>
+                  {tableData.result[0].length} Result
+                  {tableData.result[0].length > 1 ? "s" : ""}
+                </Badge>
 
                 <Button
                   variant="secondary"
@@ -196,41 +216,40 @@ function HomePage() {
                 <Table>
                   <Thead>
                     <Tr>
-                      {
-                        getTableHeaders(tableData.result[0]).map((th, index) => {
-                          return (
-                            <Th style={{ padding: "16px", fontWeight: "bold" }} key={`th_${index}`}>
-                              {th}
-                            </Th>
-                          );
-                        })
-                      }
+                      {getTableHeaders(tableData.result[0]).map((th, index) => {
+                        return (
+                          <Th
+                            style={{ padding: "16px", fontWeight: "bold" }}
+                            key={`th_${index}`}
+                          >
+                            {th}
+                          </Th>
+                        );
+                      })}
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {
-                      getTableRows(tableData.result).map((tr, index) => {
-                        return (
-                          <Tr key={`tr_${index}`}>
-                            {
-                              tr.map((td, index) => {
-                                return (
-                                  <Td style={{ padding: "16px" }} key={`td_${index}`}>
-                                    {td}
-                                  </Td>
-                                );
-                              })
-                            }
-                          </Tr>
-                        );
-                      })
-                    }
+                    {getTableRows(tableData.result).map((tr, index) => {
+                      return (
+                        <Tr key={`tr_${index}`}>
+                          {tr.map((td, index) => {
+                            return (
+                              <Td
+                                style={{ padding: "16px" }}
+                                key={`td_${index}`}
+                              >
+                                {td}
+                              </Td>
+                            );
+                          })}
+                        </Tr>
+                      );
+                    })}
                   </Tbody>
                 </Table>
               </Box>
             </div>
-
-          }
+          )}
         </div>
       </ContentLayout>
     </div>
